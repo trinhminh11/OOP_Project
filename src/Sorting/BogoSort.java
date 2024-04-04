@@ -31,13 +31,7 @@ public class BogoSort<T> extends Sort<T>{
 		return iter.next();
 	}
 
-	// public void sorting(float[] arr){
-	// 	infiniteGenerator = new Generator<Comparable>() {
-	// 		public void run() throws InterruptedException {
-	// 			while (true)
-	// 				swap(arr, 0, 1);
-	// 				yield(arr);
-	// 		}
-	// 	};
-	// }
+	public boolean hasnext(){
+		return iter.hasNext();
+	}
 }
