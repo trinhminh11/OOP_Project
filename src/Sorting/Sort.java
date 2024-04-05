@@ -1,14 +1,52 @@
 package Sorting;
 
+public abstract class Sort<T extends Comparable<T>> {
+	// Thread thread = Thread.currentThread();
+	// Thread thread = new Thread(Runnable, "test");
+	protected int[][] colors;
 
-public abstract class Sort<T> {
+	private CONST constant = new CONST();
+
+	public Sort(){
+		// thread.start();
+	}
+
+	public boolean check(T[] arr){
+		for (int i = 1; i < arr.length; i++){
+			if (arr[i].compareTo(arr[i-1]) < 0){
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	protected void setup_color(int length){
+		colors = new int[length][3];
+		reset_color(0, length-1);
+	}
+
+	protected void set_color(int left, int right, int[] color){
+		for (int i = left; i <= right; i++){
+			colors[i] = color;
+		}
+	}
+
+	protected void reset_color(int left, int right){
+		set_color(left, right, constant.WHITE);
+	}
+
+	public int[] get_color(int idx){
+		if (this.colors == null){
+			return new int[]{255, 255, 255};
+		}
+		return colors[idx];
+	}
+
     protected void swap(T[] arr, int i, int j)
     {
 		T temp = arr[j];
 		arr[j] = arr[i];
 		arr[i] = temp;
-		// arr[i] = arr[i] + arr[j];
-		// arr[j] = arr[i] - arr[j];
-		// arr[i] = arr[i] - arr[j];
     }
 }
