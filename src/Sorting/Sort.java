@@ -4,22 +4,22 @@ public abstract class Sort<T extends Comparable<T>> {
 	// Thread thread = Thread.currentThread();
 	// Thread thread = new Thread(Runnable, "test");
 	protected int[][] colors;
+	protected int timeStep;
 
-	private CONST constant = new CONST();
+	public String bestComplexity;
+	public String averageComplexity;
+	public String worstComplexity;
 
-	public Sort(){
+	protected CONST constant = new CONST();
+
+	public Sort(int timeStep){
+		this.timeStep = timeStep;
 		// thread.start();
 	}
 
-	public boolean check(T[] arr){
-		for (int i = 1; i < arr.length; i++){
-			if (arr[i].compareTo(arr[i-1]) < 0){
-				return false;
-			}
-		}
-		return true;
+	public void setTimeStep(int x){
+		timeStep = x;
 	}
-
 
 	protected void setup_color(int length){
 		colors = new int[length][3];
@@ -42,6 +42,11 @@ public abstract class Sort<T extends Comparable<T>> {
 		}
 		return colors[idx];
 	}
+
+	public String[] getTimeComplexity(){
+		return new String[]{bestComplexity, averageComplexity, worstComplexity}; 
+	}
+
 
     protected void swap(T[] arr, int i, int j)
     {
