@@ -7,6 +7,7 @@ public class CONST {
 	public int[] GREEN = new int[]{0, 255, 0};
 	public int[] BLUE = new int[]{0, 0, 255};
 	public int[] BLACK = new int[]{0, 0, 0};
+	public int[] YELLOW = new int[]{255, 255, 0};
 	public int[][] GRAY = new int[255][3];
 
 	public CONST(){
