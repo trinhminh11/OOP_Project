@@ -3,7 +3,5 @@
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "lib/core.jar",
-        // "/home/fool/Documents/processing-4.3/core/library/core.jar"
     ],
 }

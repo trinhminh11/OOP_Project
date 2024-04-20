@@ -10,6 +10,9 @@ public abstract class Sort<T extends Comparable<T>> {
 	public String averageComplexity;
 	public String worstComplexity;
 
+	public int compared = 0;
+	public int swapped = 0;
+
 	protected CONST constant = new CONST();
 
 	public Sort(int timeStep){
@@ -46,6 +49,17 @@ public abstract class Sort<T extends Comparable<T>> {
 	public String[] getTimeComplexity(){
 		return new String[]{bestComplexity, averageComplexity, worstComplexity}; 
 	}
+
+	public boolean isDone(T[] arr){
+		for (int i = 1; i < arr.length; i++){
+			if (arr[i].compareTo(arr[i-1]) < 0){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public abstract void sorting(T[] arr);
 
 
     protected void swap(T[] arr, int i, int j)
