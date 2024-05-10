@@ -646,8 +646,6 @@ public class Project extends PApplet {
 	public void draw(){
 		background(51);
 
-		System.out.println(sort.merge.getMultiThread());
-
 		if (sorted && !called_time){
 			end_time = System.currentTimeMillis();
 			called_time = true;
