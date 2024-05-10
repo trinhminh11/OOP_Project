@@ -5,7 +5,7 @@ package Sorting;
  * Quick Sort with 2 partition type: lomuto or hoare, default is lomuto
  */
 public class QuickSort<T extends Comparable<T>> extends Sort<T>{
-	private final int MAX_THREADS = 4;
+	private final int MAX_THREADS = 6;
 
 	private CustomThreadPoolExecutor ThreadPool = new CustomThreadPoolExecutor(MAX_THREADS, MAX_THREADS);
 

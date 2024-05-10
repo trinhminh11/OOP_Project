@@ -50,24 +50,20 @@ public class Project extends PApplet {
 
 
 		public boolean check(T[] arr){
-			for (int i = 1; i < arr.length; i++){
-				if (arr[i].compareTo(arr[i-1]) < 0){
-					return false;
+			// for (int i = 1; i < arr.length; i++){
+			// 	if (arr[i].compareTo(arr[i-1]) < 0){
+			// 		return false;
+			// 	}
+			// }
+
+			if (mode == "Quick"){
+				if (quick.getMultiThread()){
+					quick.shutdown();
 				}
 			}
 
-			switch (mode) {
-				case "Quick":
-					if (quick.getMultiThread()){
-						quick.shutdown();
-					}
-					break;
-			
-				default:
-					break;
-			}
 
-			return true;
+			return quick.isDone(arr);
 		}
 
 		public void setTimeStep(int t){
@@ -458,8 +454,6 @@ public class Project extends PApplet {
 			arr[i] = arr[idx];
 			arr[idx] = temp;
 		}
-
-
 	}
 
 	public void setup(){
@@ -651,6 +645,8 @@ public class Project extends PApplet {
 
 	public void draw(){
 		background(51);
+
+		System.out.println(sort.merge.getMultiThread());
 
 		if (sorted && !called_time){
 			end_time = System.currentTimeMillis();

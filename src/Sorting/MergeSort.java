@@ -1,8 +1,7 @@
 package Sorting;
 
-
 public class MergeSort<T extends Comparable<T>> extends Sort<T>{
-	private final int MAX_THREAD = 4;
+	private final int MAX_THREAD = 6;
 	private boolean multiThread = false;
 	private int count_thread = 0;
 
@@ -30,7 +29,6 @@ public class MergeSort<T extends Comparable<T>> extends Sort<T>{
 			T key = arr[i];
 			int j = i-1;
 			while (j>=0&& arr[j].compareTo(key) > 0) {
-				compared ++;
 				try {
 					Thread.sleep(timeStep);
 				} catch (InterruptedException e) {
@@ -39,14 +37,11 @@ public class MergeSort<T extends Comparable<T>> extends Sort<T>{
 				colors[j+1] = constant.BLUE;
 				colors[j] = constant.RED;
 				arr[j+1] = arr[j];
-				swapped ++;
 				j--;
 			}
 
 			arr[j+1]=key;
-			swapped ++;
 		}
-
 		set_color(0, arr.length-1, constant.WHITE);
 	}
 }
