@@ -46,29 +46,77 @@ public class QuickSort<T extends Comparable<T>> extends Sort<T>{
 		ThreadPool.shutdown();
 	}
 
-	protected void _sort(T[] arr){
-		set_color(0, arr.length-1, constant.WHITE);
-		for(int i = 1;i<arr.length;i++) {
-			set_color(0, i, constant.BLUE);
+	private int hoare_partition(T[] arr, int low, int high){
+		T pivot = arr[high];
+		
+		// Index of smaller element
+		int i = (low - 1);
 
-			T key = arr[i];
-			int j = i-1;
-			while (j>=0&& arr[j].compareTo(key) > 0) {
-				try {
-					Thread.sleep(timeStep);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				colors[j+1] = constant.BLUE;
-				colors[j] = constant.RED;
-				arr[j+1] = arr[j];
-				j--;
+		for (int j = low; j <= high- 1; j++){
+			try {
+				Thread.sleep(timeStep);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 
-			arr[j+1]=key;
+			if (arr[j].compareTo(pivot) <= 0){
+				i++;
+				swap(arr, i, j);
+			}
 		}
+		swap(arr, i + 1, high);
+		return (i + 1);
+	}
 
-		set_color(0, arr.length-1, constant.WHITE);
+	private int lomuto_partition(T[] arr, int low, int high){
+		set_color(low, high, constant.BLUE);
+		
+		T pivot = arr[high];
+		
+		int i = low;
+
+		for (int j = low; j <= high- 1; j++){
+			colors[i] = constant.YELLOW;
+			colors[j] = constant.YELLOW;
+			try {
+				Thread.sleep(timeStep);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			if (arr[j].compareTo(pivot) <= 0){
+				compared ++;
+				swap(arr, i, j);
+				i++;
+				colors[i] = constant.WHITE;
+				swapped++;
+			}
+			colors[j] = constant.WHITE;
+		}
+		
+		swap(arr, i, high);
+		swapped ++;
+		
+		return i;
+	}
+
+	private void quickSort(T[] arr, int low, int high){
+		if (low < high){
+			int pivot;
+			if (partition == "lomuto"){
+				pivot = lomuto_partition(arr, low, high);
+			}
+			else{
+				pivot = hoare_partition(arr, low, high);
+			}
+
+			quickSort(arr, low, pivot - 1);
+			quickSort(arr, pivot + 1, high);
+		}
+	}
+
+	protected void _sort(T[] arr){
+		quickSort(arr, 0, arr.length-1);
 	}
 }
 
