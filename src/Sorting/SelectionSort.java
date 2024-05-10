@@ -2,8 +2,6 @@ package Sorting;
 
 public class SelectionSort<T extends Comparable<T>> extends Sort<T>{
 
-	
-
 	public SelectionSort(int timeStep){
 		super(timeStep);
 
@@ -11,8 +9,8 @@ public class SelectionSort<T extends Comparable<T>> extends Sort<T>{
 		averageComplexity = "O(n^2)";
 		worstComplexity = "O(n^2)";
 	}
-
-	private void insertionSort(T[] arr){
+	
+	protected void _sort(T[] arr){
 		set_color(0, arr.length-1, constant.WHITE);
 		for(int i = 1;i<arr.length;i++) {
 			set_color(0, i, constant.BLUE);
@@ -33,19 +31,6 @@ public class SelectionSort<T extends Comparable<T>> extends Sort<T>{
 
 			arr[j+1]=key;
 		}
-
 		set_color(0, arr.length-1, constant.WHITE);
-	}
-
-	@Override
-	public void sorting(T[] arr){
-		setup_color(arr.length);
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				insertionSort(arr);
-			}
-		}).start();;
-		
 	}
 }

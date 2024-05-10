@@ -6,6 +6,7 @@ import java.util.Random;
 import Sorting.*;
 
 public class Project extends PApplet {
+
 	private final int RANDOM_SEED = 0;
 	private final int FPS = 60;
 
@@ -167,34 +168,34 @@ public class Project extends PApplet {
 			}
 		}
 
-		public void sorting(T[] arr){
+		public void sort(T[] arr){
 			switch (mode) {
 				case "Quick":
-					quick.sorting(arr);
+					quick.sort(arr);
 					break;
 				
 				case "Merge":
-					merge.sorting(arr);
+					merge.sort(arr);
 					break;
 
 				case "Heap":
-					heap.sorting(arr);
+					heap.sort(arr);
 					break;
 				
 				case "Bubble":
-					bubble.sorting(arr);
+					bubble.sort(arr);
 					break;
 				
 				case "Selection":
-					selection.sorting(arr);
+					selection.sort(arr);
 					break;
 				
 				case "Insertion":
-					insertion.sorting(arr);
+					insertion.sort(arr);
 					break;
 			
 				default:
-					quick.sorting(arr);
+					quick.sort(arr);
 					break;
 			}
 		}
@@ -390,7 +391,7 @@ public class Project extends PApplet {
 			text(timeComplexity[2], 225, 265);
 
 			textAlign(LEFT);
-			String temp;
+			String temp = "";
 			long mili = curTime%1000;
 			int s = (int)(curTime/1000);
 
@@ -398,22 +399,30 @@ public class Project extends PApplet {
 			s = s - m*60;
 
 			if (m < 10){
-				temp = "0" + m;
+				temp += "0";
 				
 			}
-			else{
-				temp = "" + m;
-			}
+			
+			temp += m;
+
 			temp += ":";
 			if (s < 10){
-				temp += "0" + s;
+				temp += "0";
 			}
-			else{
-				temp += ""+s;
+			temp += s;
+
+			temp += ".";
+			if (mili < 10){
+				temp += "00";
 			}
+			else if(mili <100){
+				temp += "0";
+			}
+
+			temp += mili;
 			
 
-			text("Visual Time: " + temp + "." + mili + " | compared: " + sort.getCompare() + " | swapped: " + sort.getSwap(), 5, ui_height + 25);
+			text("Visual Time: " + temp + " | compared: " + sort.getCompare() + " | swapped: " + sort.getSwap(), 5, ui_height + 25);
 
 		}
 	}
@@ -454,6 +463,7 @@ public class Project extends PApplet {
 	}
 
 	public void setup(){
+		
 		random_arr();
 		frameRate(FPS);
 
@@ -491,7 +501,7 @@ public class Project extends PApplet {
 	public void ButtonProcessing(){
 		if (startButton.isClicked() && done){
 			if (reseted){
-				sort.sorting(arr);
+				sort.sort(arr);
 				reseted = false;
 				done = false;
 			}

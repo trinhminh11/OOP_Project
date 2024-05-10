@@ -6,6 +6,8 @@ public abstract class Sort<T extends Comparable<T>> {
 	protected int[][] colors;
 	protected int timeStep;
 
+	protected Thread main_Thread;
+
 	public String bestComplexity;
 	public String averageComplexity;
 	public String worstComplexity;
@@ -51,21 +53,30 @@ public abstract class Sort<T extends Comparable<T>> {
 	}
 
 	public boolean isDone(T[] arr){
-		for (int i = 1; i < arr.length; i++){
-			if (arr[i].compareTo(arr[i-1]) < 0){
-				return false;
-			}
+		if (main_Thread.isAlive()){
+			return false;
 		}
-		return true;
+		else{
+			return true;
+		}
 	}
 
-	public abstract void sorting(T[] arr);
-
-
-    protected void swap(T[] arr, int i, int j)
-    {
+	protected void swap(T[] arr, int i, int j){
 		T temp = arr[j];
 		arr[j] = arr[i];
 		arr[i] = temp;
     }
+
+	protected abstract void _sort(T[] arr);
+
+	public void sort(T[] arr){
+		setup_color(arr.length);
+		main_Thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				_sort(arr);
+			}
+		});
+		main_Thread.start();
+	}
 }

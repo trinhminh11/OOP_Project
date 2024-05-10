@@ -5,10 +5,7 @@ package Sorting;
  * Quick Sort with 2 partition type: lomuto or hoare, default is lomuto
  */
 public class QuickSort<T extends Comparable<T>> extends Sort<T>{
-
-	// max Thread: 55011
-	private final int MAX_THREADS = 55011;
-	
+	private final int MAX_THREADS = 4;
 
 	private CustomThreadPoolExecutor ThreadPool = new CustomThreadPoolExecutor(MAX_THREADS, MAX_THREADS);
 
@@ -49,7 +46,7 @@ public class QuickSort<T extends Comparable<T>> extends Sort<T>{
 		ThreadPool.shutdown();
 	}
 
-	private void quickSort(T[] arr){
+	protected void _sort(T[] arr){
 		set_color(0, arr.length-1, constant.WHITE);
 		for(int i = 1;i<arr.length;i++) {
 			set_color(0, i, constant.BLUE);
@@ -73,19 +70,6 @@ public class QuickSort<T extends Comparable<T>> extends Sort<T>{
 
 		set_color(0, arr.length-1, constant.WHITE);
 	}
-
-	@Override
-	public void sorting(T[] arr){
-		setup_color(arr.length);
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				quickSort(arr);
-			}
-		}).start();;
-		
-	}
-
 }
 
 

@@ -2,7 +2,6 @@ package Sorting;
 
 public class InsertionSort<T extends Comparable<T>> extends Sort<T>{
 
-
 	public InsertionSort(int timeStep){
 		super(timeStep);
 		bestComplexity = "O(n)";
@@ -10,7 +9,7 @@ public class InsertionSort<T extends Comparable<T>> extends Sort<T>{
 		worstComplexity = "O(n^2)";
 	}
 
-	private void insertionSort(T[] arr){
+	protected void _sort(T[] arr){
 		set_color(0, arr.length-1, constant.WHITE);
 		for(int i = 1;i<arr.length;i++) {
 			set_color(0, i, constant.BLUE);
@@ -18,6 +17,7 @@ public class InsertionSort<T extends Comparable<T>> extends Sort<T>{
 			T key = arr[i];
 			int j = i-1;
 			while (j>=0&& arr[j].compareTo(key) > 0) {
+				compared ++;
 				try {
 					Thread.sleep(timeStep);
 				} catch (InterruptedException e) {
@@ -26,24 +26,14 @@ public class InsertionSort<T extends Comparable<T>> extends Sort<T>{
 				colors[j+1] = constant.BLUE;
 				colors[j] = constant.RED;
 				arr[j+1] = arr[j];
+				swapped ++;
 				j--;
 			}
 
 			arr[j+1]=key;
+			swapped ++;
 		}
 
 		set_color(0, arr.length-1, constant.WHITE);
-	}
-
-	@Override
-	public void sorting(T[] arr){
-		setup_color(arr.length);
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				insertionSort(arr);
-			}
-		}).start();;
-		
 	}
 }
