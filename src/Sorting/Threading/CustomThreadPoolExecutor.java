@@ -1,4 +1,4 @@
-package Sorting;
+package Sorting.Threading;
 
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.PriorityBlockingQueue;

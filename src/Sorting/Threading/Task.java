@@ -1,4 +1,4 @@
-package Sorting;
+package Sorting.Threading;
 
 public class Task implements Runnable{
 	Runnable target;

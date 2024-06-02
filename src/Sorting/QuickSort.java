@@ -1,5 +1,7 @@
 package Sorting;
 
+import Sorting.Threading.CustomThreadPoolExecutor;
+import Sorting.Threading.Task;
 
 /**
  * Quick Sort with 2 partition type: lomuto or hoare, default is lomuto
@@ -46,56 +48,83 @@ public class QuickSort<T extends Comparable<T>> extends Sort<T>{
 		ThreadPool.shutdown();
 	}
 
+	public boolean ThreadPoolDone(){
+		return ThreadPool.getActiveCount() == 0;
+	}
+
 	private int hoare_partition(T[] arr, int low, int high){
+		set_color(low, high-1, constant.BLUE);
 		T pivot = arr[high];
-		
-		// Index of smaller element
-		int i = (low - 1);
+        int i = low, j = high-1;
 
-		for (int j = low; j <= high- 1; j++){
-			try {
-				Thread.sleep(timeStep);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-			if (arr[j].compareTo(pivot) <= 0){
+        while (true) {
+			await();
+			while (arr[i].compareTo(pivot) < 0) {
+				compared ++;
+				colors[i] = constant.WHITE;
+				await();
 				i++;
-				swap(arr, i, j);
+				colors[i] = constant.YELLOW;
 			}
-		}
-		swap(arr, i + 1, high);
-		return (i + 1);
+            
+			while (arr[j].compareTo(pivot) > 0 && j >= 1){
+				compared ++;
+				colors[j] = constant.WHITE;
+				await();
+				j--;
+				colors[j] = constant.YELLOW;
+			}
+
+            if (i >= j){
+				await();
+				swap(arr, i, high);
+				swapped ++;
+				colors[i] = constant.WHITE;
+				colors[j] = constant.WHITE;
+                return i;
+			}
+			await();
+			swap(arr, i, j);
+			swapped ++;
+        }
 	}
 
 	private int lomuto_partition(T[] arr, int low, int high){
-		set_color(low, high, constant.BLUE);
+		set_color(low, high, constant.WHITE);
 		
 		T pivot = arr[high];
 		
 		int i = low;
 
+		colors[i] = constant.WHITE;
+
 		for (int j = low; j <= high- 1; j++){
-			colors[i] = constant.YELLOW;
-			colors[j] = constant.YELLOW;
-			try {
-				Thread.sleep(timeStep);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			await();
+			if (j>low){
+				colors[j-1] = constant.BLUE;
 			}
 
+			colors[j] = constant.YELLOW;
+
 			if (arr[j].compareTo(pivot) <= 0){
+				await();
 				compared ++;
+				await();
 				swap(arr, i, j);
-				i++;
-				colors[i] = constant.WHITE;
 				swapped++;
+				colors[i] = constant.BLUE;
+				i++;
+				colors[i] = constant.YELLOW;
 			}
-			colors[j] = constant.WHITE;
 		}
-		
+
+
+		await();
 		swap(arr, i, high);
 		swapped ++;
+
+		colors[low] = constant.WHITE;
+		set_color(i, high, constant.WHITE);
 		
 		return i;
 	}
@@ -103,6 +132,7 @@ public class QuickSort<T extends Comparable<T>> extends Sort<T>{
 	private void quickSort(T[] arr, int low, int high){
 		if (low < high){
 			int pivot;
+
 			if (partition == "lomuto"){
 				pivot = lomuto_partition(arr, low, high);
 			}
@@ -110,12 +140,32 @@ public class QuickSort<T extends Comparable<T>> extends Sort<T>{
 				pivot = hoare_partition(arr, low, high);
 			}
 
-			quickSort(arr, low, pivot - 1);
-			quickSort(arr, pivot + 1, high);
+			colors[pivot] = constant.RED;
+
+			if (multiThread){
+				Task t1 = new Task(() -> {
+					quickSort(arr, low, pivot - 1);
+				}, pivot - low);
+
+				Task t2 = new Task(() -> {
+					quickSort(arr, pivot + 1, high);
+				}, high - pivot);
+
+				ThreadPool.submit(t1);
+				ThreadPool.submit(t2);
+			}
+
+			else{
+				quickSort(arr, low, pivot - 1);
+				colors[low-1 + (low == 0 ? 1: 0)] = constant.WHITE;
+				quickSort(arr, pivot + 1, high);
+			}
+
+			colors[pivot] = constant.WHITE;
 		}
 	}
-
 	protected void _sort(T[] arr){
+		ThreadPool = new CustomThreadPoolExecutor(MAX_THREADS, MAX_THREADS);
 		quickSort(arr, 0, arr.length-1);
 	}
 }

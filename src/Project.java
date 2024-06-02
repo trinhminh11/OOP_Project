@@ -11,10 +11,11 @@ public class Project extends PApplet {
 	private final int FPS = 60;
 
 	private final int MIN_TIME = 1;
-	private final int MAX_TIME = 100;
+	private final int MAX_TIME = 50;
 
 	private final int MIN_LENGTH = 2;
 	private final int MAX_LENGTH = 500;
+
 
 	private CONST constant = new CONST();
 	private Random rand = new Random(RANDOM_SEED);
@@ -22,6 +23,7 @@ public class Project extends PApplet {
 	private int ui_distance = 75;
 	private int ui_height = 275;
 	private int num_array = 100;
+	private int timeStep = 5;
 	private float w = 0;
 	private long curTime = 0, start_time = 0, end_time = 0;
 	private boolean called_time = false;
@@ -36,196 +38,10 @@ public class Project extends PApplet {
 	private boolean done = true;
 	private boolean reseted = true;
 
-	public class SortProcessing<T extends Comparable<T>>{
-		private String mode = "Quick";
-		private int timeStep = 10;
 
-		// lomuto or hoare
-		QuickSort<T> quick = new QuickSort<T>(timeStep);
-		MergeSort<T> merge = new MergeSort<>(timeStep);
-		HeapSort<T> heap = new HeapSort<>(timeStep);
-		BubbleSort<T> bubble = new BubbleSort<T>(timeStep);
-		SelectionSort<T> selection = new SelectionSort<>(timeStep);
-		InsertionSort<T>  insertion = new InsertionSort<>(timeStep);
+	SortProcessing<Double> sort = new SortProcessing<>(timeStep);
 
-
-		public boolean check(T[] arr){
-			// for (int i = 1; i < arr.length; i++){
-			// 	if (arr[i].compareTo(arr[i-1]) < 0){
-			// 		return false;
-			// 	}
-			// }
-
-			if (mode == "Quick"){
-				if (quick.getMultiThread()){
-					quick.shutdown();
-				}
-			}
-
-
-			return quick.isDone(arr);
-		}
-
-		public void setTimeStep(int t){
-			this.timeStep = t;
-			quick.setTimeStep(t);
-			merge.setTimeStep(t);
-			heap.setTimeStep(t);
-			bubble.setTimeStep(t);
-			selection.setTimeStep(t);
-			insertion.setTimeStep(t);
-		}
-
-		public int[] get_color(int i){
-			switch (mode) {
-				case "Quick":
-					return quick.get_color(i);
-				
-				case "Merge":
-					return merge.get_color(i);
-				
-				case "Heap":
-					return heap.get_color(i);
-				
-				case "Bubble":
-					return bubble.get_color(i);
-
-				case "Selection":
-					return selection.get_color(i);
-				
-				case "Insertion":
-					return insertion.get_color(i);
-			
-				default:
-					return quick.get_color(i);
-			}
-		}
-		
-		public void setMode(String m){
-			mode = m;
-		}
-
-		public String getMode(){
-			return mode;
-		}
-
-		public void setMultiThread(boolean f){
-			quick.setMultiThread(f);
-			merge.setMultiThread(f);
-		}
-
-		public int getCompare(){
-			switch (mode) {
-				case "Quick":
-					return quick.compared;
-				
-				case "Merge":
-					return merge.compared;
-				
-				case "Heap":
-					return heap.compared;
-				
-				case "Bubble":
-					return bubble.compared;
-
-				case "Selection":
-					return selection.compared;
-				
-				case "Insertion":
-					return insertion.compared;
-			
-				default:
-					return quick.compared;
-			}
-		}
-
-		public int getSwap(){
-			switch (mode) {
-				case "Quick":
-					return quick.swapped;
-				
-				case "Merge":
-					return merge.swapped;
-				
-				case "Heap":
-					return heap.swapped;
-				
-				case "Bubble":
-					return bubble.swapped;
-
-				case "Selection":
-					return selection.swapped;
-				
-				case "Insertion":
-					return insertion.swapped;
-			
-				default:
-					return quick.swapped;
-			}
-		}
-
-		public void sort(T[] arr){
-			switch (mode) {
-				case "Quick":
-					quick.sort(arr);
-					break;
-				
-				case "Merge":
-					merge.sort(arr);
-					break;
-
-				case "Heap":
-					heap.sort(arr);
-					break;
-				
-				case "Bubble":
-					bubble.sort(arr);
-					break;
-				
-				case "Selection":
-					selection.sort(arr);
-					break;
-				
-				case "Insertion":
-					insertion.sort(arr);
-					break;
-			
-				default:
-					quick.sort(arr);
-					break;
-			}
-		}
-
-		public String[] getTimeComplexity(){
-			switch (mode) {
-				case "Quick":
-					return quick.getTimeComplexity();
-				
-				case "Merge":
-					return merge.getTimeComplexity();
-				
-				case "Heap":
-					return heap.getTimeComplexity();
-				
-				case "Bubble":
-					return bubble.getTimeComplexity();
-
-				case "Selection":
-					return selection.getTimeComplexity();
-				
-				case "Insertion":
-					return insertion.getTimeComplexity();
-			
-				default:
-					return quick.getTimeComplexity();
-			}
-		}
-	}
-
-	SortProcessing<Double> sort = new SortProcessing<>();
-
-
-	public class Button{
+	private class Button{
 		private PVector Pos = new PVector(0, 0);
 		private float Width = 0;
 		private float Height = 0;
@@ -350,7 +166,7 @@ public class Project extends PApplet {
 		}
 	}
 
-	public class Panel{
+	private class Panel{
 		private int[] c = constant.GRAY[105];
 		void render(){
 			stroke(0);
@@ -479,8 +295,8 @@ public class Project extends PApplet {
 
 		quickSortButton.set_color(constant.BLACK);
 
-		TimeStepSlider = new Slider(25, 25, 250, 0, round(map(20, MIN_TIME, MAX_TIME, 0, 250)), 20);
-		numArraySlider = new Slider(25, 75, 250, 0, round(map(100, MIN_LENGTH, MAX_LENGTH, 0, 250)), 20);
+		TimeStepSlider = new Slider(25, 25, 250, 0, round(map(timeStep, MIN_TIME, MAX_TIME, 0, 250)), 20);
+		numArraySlider = new Slider(25, 75, 250, 0, round(map(num_array, MIN_LENGTH, MAX_LENGTH, 0, 250)), 20);
 	}
 
 	private void ButtonReset(){
@@ -547,7 +363,7 @@ public class Project extends PApplet {
 		quickSortButton.update();
 
 		if (hoareButton.isClicked()){
-			sort.quick.changeMode();
+			sort.changeQuickSortMode();
 			int[] hoare_c = hoareButton.get_color();
 			if (hoare_c == constant.BLACK){
 				hoareButton.set_color(constant.GRAY[51]);
@@ -625,7 +441,7 @@ public class Project extends PApplet {
 		fill(255);
 		textSize(20);
 		int tStep = round(map(TimeStepSlider.getValue(), 0, TimeStepSlider.length, MIN_TIME, MAX_TIME));
-		text("Time Step: " + tStep + " ms", TimeStepSlider.Pos.x + TimeStepSlider.length/2, 50);
+		text("Time Delay: " + tStep + " ms", TimeStepSlider.Pos.x + TimeStepSlider.length/2, 50);
 
 		if (frameCount % 20 == 0){
 			sort.setTimeStep(tStep);

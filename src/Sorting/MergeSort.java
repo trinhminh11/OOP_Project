@@ -68,20 +68,18 @@ public class MergeSort<T extends Comparable<T>> extends Sort<T>{
 		// Add elements from first half or second half based on whichever is lower, 
 		// do until one of the list is exhausted and no more direct one-to-one comparison could be made
 		while(i<=mid && j<=end){
+			await();
 			colors[begin+k] = constant.YELLOW;
-
-			try {
-				Thread.sleep(timeStep);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
+			
 			if (array[i].compareTo(array[j]) <= 0){
+				await();
 				compared++;
+				await();
 				temp[k] = array[i];
 				swapped ++;
 				i+=1;
 			}else{
+				await();
 				temp[k] = array[j];
 				swapped ++;
 				j+=1;
@@ -91,13 +89,10 @@ public class MergeSort<T extends Comparable<T>> extends Sort<T>{
 
 		// Add remaining elements to temp array from first half that are left over
 		while(i<=mid){
+			await();
 			colors[begin+k] = constant.YELLOW;
-			try {
-				Thread.sleep(timeStep);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
+			
+			await();
 			temp[k] = array[i];
 			swapped ++;
 			i+=1; k+=1;
@@ -105,26 +100,20 @@ public class MergeSort<T extends Comparable<T>> extends Sort<T>{
 		
 		// Add remaining elements to temp array from second half that are left over
 		while(j<=end){
+			await();
 			colors[begin+k] = constant.YELLOW;
-			try {
-				Thread.sleep(timeStep);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 
+			await();
 			temp[k] = array[j];
 			swapped ++;
 			j+=1; k+=1;
 		}
 
 		for(i=begin, k=0; i<=end; i++,k++){
+			await();
 			colors[i] = constant.BLUE;
-			try {
-				Thread.sleep(timeStep);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 			
+			await();
 			array[i] = temp[k];
 			swapped ++;
 		}

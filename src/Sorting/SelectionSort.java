@@ -18,11 +18,7 @@ public class SelectionSort<T extends Comparable<T>> extends Sort<T>{
 			T key = arr[i];
 			int j = i-1;
 			while (j>=0&& arr[j].compareTo(key) > 0) {
-				try {
-					Thread.sleep(timeStep);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				await();
 				colors[j+1] = constant.BLUE;
 				colors[j] = constant.RED;
 				arr[j+1] = arr[j];

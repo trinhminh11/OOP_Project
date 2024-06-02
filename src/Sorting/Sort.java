@@ -20,7 +20,14 @@ public abstract class Sort<T extends Comparable<T>> {
 
 	public Sort(int timeStep){
 		this.timeStep = timeStep;
-		// thread.start();
+	}
+
+	protected void await(){
+		try {
+			Thread.sleep(timeStep);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void setTimeStep(int x){
