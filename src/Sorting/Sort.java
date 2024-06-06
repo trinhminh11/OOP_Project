@@ -77,6 +77,18 @@ public abstract class Sort<T extends Comparable<T>> {
 		timeStep = x;
 	}
 
+	private static void play(int i, int duration) throws InterruptedException{
+		// * start playing a note
+		// channels[INSTRUMENT].noteOn(id(note), VOLUME );
+		channels[INSTRUMENT].noteOn(i, VOLUME );
+
+		// * wait
+		Thread.sleep( duration );
+		// * stop playing a note
+		channels[INSTRUMENT].noteOff(i);
+		// channels[INSTRUMENT].noteOff(id(note));
+	}
+
 	protected void setup_color(int length){
 		colors = new int[length][3];
 		reset_color(0, length-1);
@@ -145,21 +157,17 @@ public abstract class Sort<T extends Comparable<T>> {
 			@Override
 			public void run() {
 				_sort(arr);
+
+				for (int i = 0; i < arr.length; i++){
+					await(i);
+					int c = (int) (i*(360/arr.length));
+					colors[i] = constant.hueToRGB(c);
+				}
 			}
 		});
 		main_Thread.start();
 	}
 	
 
-	private static void play(int i, int duration) throws InterruptedException{
-			// * start playing a note
-			// channels[INSTRUMENT].noteOn(id(note), VOLUME );
-			channels[INSTRUMENT].noteOn(i, VOLUME );
-
-			// * wait
-			Thread.sleep( duration );
-			// * stop playing a note
-			channels[INSTRUMENT].noteOff(i);
-			// channels[INSTRUMENT].noteOff(id(note));
-	}
+	
 }
