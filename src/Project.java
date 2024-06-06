@@ -175,7 +175,7 @@ public class Project extends PApplet {
 		Double[] temp_arr = new Double[num_array];
 
 		w = (float)init_width/(float)num_array;
-		float step = ((float)visual_height-1)/((float)arr.length-1);
+		float step = ((float)height - ui_height - ui_distance-1)/((float)arr.length-1);
 		arr[0] = 5.0;
 		temp_arr[temp_arr.length-1] = 5.0;
 
