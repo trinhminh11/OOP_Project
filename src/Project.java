@@ -11,10 +11,17 @@ public class Project extends PApplet {
 	private final int FPS = 60;
 
 	private final int MIN_TIME = 1;
-	private final int MAX_TIME = 50;
+	private final int MAX_TIME = 100;
 
 	private final int MIN_LENGTH = 2;
 	private final int MAX_LENGTH = 500;
+
+
+	private int draw_type = 0;
+
+	private boolean pressed = false;
+
+	private int init_width = 1425;
 
 
 	private CONST constant = new CONST();
@@ -23,7 +30,7 @@ public class Project extends PApplet {
 	private int ui_distance = 75;
 	private int ui_height = 275;
 	private int num_array = 100;
-	private int timeStep = 5;
+	private int timeStep = 10;
 	private float w = 0;
 	private long curTime = 0, start_time = 0, end_time = 0;
 	private boolean called_time = false;
@@ -37,7 +44,6 @@ public class Project extends PApplet {
 
 	private boolean done = true;
 	private boolean reseted = true;
-
 
 	SortProcessing<Double> sort = new SortProcessing<>(timeStep);
 
@@ -104,14 +110,14 @@ public class Project extends PApplet {
 		}
 	}
 
-	public class Slider{
+	private class Slider{
 		private PVector Pos = new PVector(0, 0);
 		private PVector Dir = new PVector(0, 0);
 		private float Radius = 0;
-		private boolean Clicked = false;
 		private boolean Pressed = false;
 		private int value = 20;
 		private float length;
+
 
 		Slider(int x, int y, int dir_x, int dir_y, int value, float R){
 			Pos.x = x;
@@ -123,27 +129,16 @@ public class Project extends PApplet {
 			this.value = value;
 		}
 
-		public boolean isClicked(){
-			return Clicked;
-		}
-
-		public boolean isPressed(){
-			return Pressed;
-		}
-
 		public int getValue(){
 			return value;
 		}
 
 		public void update(){
-			Clicked = false;
 			if (mousePressed == true && mouseButton == LEFT && Pressed == false){
 				if (dist(mouseX, mouseY, Pos.x+value, Pos.y) <= Radius){
 					Pressed = true;
-					Clicked = true;
 				}
 				else{
-					Clicked = false;
 				}
 			}
 			
@@ -166,100 +161,27 @@ public class Project extends PApplet {
 		}
 	}
 
-	private class Panel{
-		private int[] c = constant.GRAY[105];
-		void render(){
-			stroke(0);
-			fill(c[0], c[1], c[2]);
-			rect(0, 0, width, ui_height);
-
-			fill(0);
-			line(width-200, 0, width-200, ui_height);
-
-			line(300, 0, 300, ui_height);
-
-			line(0, 125, 300, 125);
-
-			line(0, 160, 300, 160);
-
-
-			fill(255);
-			textAlign(CENTER);
-			textSize(25);
-			text("Time Complexity", 150, 150);
-
-			text("Best", 75, 185);
-			text("Average", 75, 225);
-			text("Worst", 75, 265);
-
-			fill(0);
-			line(150, 160, 150, ui_height);
-
-
-			fill(255);
-			String[] timeComplexity = sort.getTimeComplexity();
-			text(timeComplexity[0], 225, 185);
-			text(timeComplexity[1], 225, 225);
-			text(timeComplexity[2], 225, 265);
-
-			textAlign(LEFT);
-			String temp = "";
-			long mili = curTime%1000;
-			int s = (int)(curTime/1000);
-
-			int m = s/60;
-			s = s - m*60;
-
-			if (m < 10){
-				temp += "0";
-				
-			}
-			
-			temp += m;
-
-			temp += ":";
-			if (s < 10){
-				temp += "0";
-			}
-			temp += s;
-
-			temp += ".";
-			if (mili < 10){
-				temp += "00";
-			}
-			else if(mili <100){
-				temp += "0";
-			}
-
-			temp += mili;
-			
-
-			text("Visual Time: " + temp + " | compared: " + sort.getCompare() + " | swapped: " + sort.getSwap(), 5, ui_height + 25);
-
-		}
-	}
-	// lomuto or hoare
-	
-	Panel panel = new Panel();
-
 	Slider TimeStepSlider, numArraySlider;
 
-	Button startButton, resetButton, skipButton, quickSortButton, hoareButton, multiThreadButton, mergeSortButton, heapSortButton, bubbleSortButton, selectionSortButton, insertionSortButton;
+	Button startButton, resetButton, skipButton, quickSortButton, hoareButton, multiThreadButton, mergeSortButton, heapSortButton, bubbleSortButton, selectionSortButton, insertionSortButton, timSortButton, introSortButton;
 
 	public void settings(){
-		width = 1200;
+		width = init_width;
 		height = visual_height + ui_height + ui_distance;
 	}
 
 	public void random_arr(){
 		arr = new Double[num_array];
-		w = (float)width/(float)num_array;
+		Double[] temp_arr = new Double[num_array];
+
+		w = (float)init_width/(float)num_array;
 		float step = ((float)visual_height-1)/((float)arr.length-1);
 		arr[0] = 5.0;
+		temp_arr[temp_arr.length-1] = 5.0;
 
 		for (int i = 1; i < arr.length; i++){
 			arr[i] = arr[i-1] + step;
-			// arr[i] = rand.nextDouble(visual_height);
+			temp_arr[arr.length-i-1] = arr[i];
 		}
 
 
@@ -270,6 +192,19 @@ public class Project extends PApplet {
 			arr[i] = arr[idx];
 			arr[idx] = temp;
 		}
+
+
+
+
+		// for (int i = 0; i < arr.length; i++){
+		// 	arr[i] = temp_arr[i];
+		// }
+
+	}
+
+	public void closeApplication() {
+		System.out.println("yay");
+		exit();
 	}
 
 	public void setup(){
@@ -277,26 +212,31 @@ public class Project extends PApplet {
 		random_arr();
 		frameRate(FPS);
 
-		startButton = new Button(width-175, 10, 150, 75, "Start", 50, sortButtonColor, constant.WHITE);
-		resetButton = new Button(width-175, 95, 150, 75, "Reset", 50, sortButtonColor, constant.WHITE);
-		skipButton = new Button(width-175, 180, 150, 75, "Skip", 50, sortButtonColor, constant.WHITE);
+		startButton = new Button(init_width-175, 10, 150, 75, "Start", 50, sortButtonColor, constant.WHITE);
+		resetButton = new Button(init_width-175, 95, 150, 75, "Reset", 50, sortButtonColor, constant.WHITE);
+		skipButton = new Button(init_width-175, 180, 150, 75, "Skip", 50, sortButtonColor, constant.WHITE);
 
-		multiThreadButton = new Button(width - 100, ui_height, 100, 50, "MThread", 25, sortButtonColor, constant.GREEN);
+		multiThreadButton = new Button(init_width - 100, ui_height, 100, 50, "MThread", 25, sortButtonColor, constant.GREEN);
+		hoareButton = new Button(init_width - 200, ui_height, 100, 50, "Hoare", 25, sortButtonColor, constant.GREEN);
 
-		quickSortButton = new Button(width - 875, 25, 200, 100, "Quick", 50, sortButtonColor, constant.WHITE);
-		hoareButton = new Button(width - 200, ui_height, 100, 50, "Hoare", 25, sortButtonColor, constant.GREEN);
-		mergeSortButton = new Button(width-650, 25, 200, 100, "Merge", 50, sortButtonColor, constant.WHITE);
-		heapSortButton = new Button(width-425, 25, 200, 100, "Heap", 50, sortButtonColor, constant.WHITE);
+		quickSortButton = new Button(init_width - 1100, 25, 200, 100, "Quick", 50, sortButtonColor, constant.WHITE);
+		mergeSortButton = new Button(init_width-875, 25, 200, 100, "Merge", 50, sortButtonColor, constant.WHITE);
+		heapSortButton = new Button(init_width-650, 25, 200, 100, "Heap", 50, sortButtonColor, constant.WHITE);
 
+		bubbleSortButton = new Button(init_width - 1100, 150, 200, 100, "Bubble", 50, sortButtonColor, constant.WHITE);
+		selectionSortButton = new Button(init_width-875, 150, 200, 100, "Selection", 50, sortButtonColor, constant.WHITE);
+		insertionSortButton = new Button(init_width-650, 150, 200, 100, "Insertion", 50, sortButtonColor, constant.WHITE);
 
-		bubbleSortButton = new Button(width - 875, 150, 200, 100, "Bubble", 50, sortButtonColor, constant.WHITE);
-		selectionSortButton = new Button(width-650, 150, 200, 100, "Selection", 50, sortButtonColor, constant.WHITE);
-		insertionSortButton = new Button(width-425, 150, 200, 100, "Insertion", 50, sortButtonColor, constant.WHITE);
+		timSortButton = new Button(init_width - 425, 25, 200, 100, "Tim", 50, sortButtonColor, constant.WHITE);
+		introSortButton = new Button(init_width - 425, 150, 200, 100, "Intro", 50, sortButtonColor, constant.WHITE);
+
 
 		quickSortButton.set_color(constant.BLACK);
 
 		TimeStepSlider = new Slider(25, 25, 250, 0, round(map(timeStep, MIN_TIME, MAX_TIME, 0, 250)), 20);
 		numArraySlider = new Slider(25, 75, 250, 0, round(map(num_array, MIN_LENGTH, MAX_LENGTH, 0, 250)), 20);
+
+		surface.setResizable(true);
 	}
 
 	private void ButtonReset(){
@@ -306,6 +246,8 @@ public class Project extends PApplet {
 		bubbleSortButton.set_color(sortButtonColor);
 		selectionSortButton.set_color(sortButtonColor);
 		insertionSortButton.set_color(sortButtonColor);
+		timSortButton.set_color(sortButtonColor);
+		introSortButton.set_color(sortButtonColor);
 	}
 	
 	public void ButtonProcessing(){
@@ -324,6 +266,7 @@ public class Project extends PApplet {
 			if (done == true){
 				random_arr();
 				reseted = true;
+				sort.set_color(0, arr.length-1, constant.WHITE);
 			}
 		}
 
@@ -340,10 +283,16 @@ public class Project extends PApplet {
 		if (done){
 			SortButtonProcessing();
 		}
+
 		quickSortButton.render();
+
 		if (sort.getMode()=="Quick"){
 			hoareButton.render();
 		}
+
+		introSortButton.render();
+		timSortButton.render();
+
 		multiThreadButton.render();
 		mergeSortButton.render();
 		heapSortButton.render();
@@ -354,13 +303,7 @@ public class Project extends PApplet {
 	}
 
 	public void SortButtonProcessing(){
-		if (quickSortButton.isClicked()){
-			sort.setMode("Quick");
-			ButtonReset();
-			quickSortButton.set_color(constant.BLACK);
-		}
-
-		quickSortButton.update();
+		
 
 		if (hoareButton.isClicked()){
 			sort.changeQuickSortMode();
@@ -389,6 +332,31 @@ public class Project extends PApplet {
 
 		multiThreadButton.update();
 
+		if (timSortButton.isClicked()){
+			sort.setMode("Tim");
+			ButtonReset();
+			timSortButton.set_color(constant.BLACK);
+		}
+		
+		timSortButton.update();
+
+
+		if (introSortButton.isClicked()){
+			sort.setMode("Intro");
+			ButtonReset();
+			introSortButton.set_color(constant.BLACK);
+		}
+
+		introSortButton.update();
+
+		if (quickSortButton.isClicked()){
+			sort.setMode("Quick");
+			ButtonReset();
+			quickSortButton.set_color(constant.BLACK);
+		}
+
+		quickSortButton.update();
+
 		if (bubbleSortButton.isClicked()){
 			sort.setMode("Bubble");
 			ButtonReset();
@@ -410,7 +378,6 @@ public class Project extends PApplet {
 		}
 
 		heapSortButton.update();
-
 
 
 		bubbleSortButton.update();
@@ -459,6 +426,79 @@ public class Project extends PApplet {
 
 	}
 
+	private void DrawPanel(){
+		int[] c = constant.GRAY[105];
+		stroke(0);
+		fill(c[0], c[1], c[2]);
+		rect(0, 0, init_width, ui_height);
+
+		fill(0);
+		line(init_width-200, 0, init_width-200, ui_height);
+
+		line(300, 0, 300, ui_height);
+
+		line(0, 125, 300, 125);
+
+		line(0, 160, 300, 160);
+
+		line(init_width, 0, init_width, height);
+
+
+		fill(255);
+		textAlign(CENTER);
+		textSize(25);
+		text("Time Complexity", 150, 150);
+
+		text("Best", 75, 185);
+		text("Average", 75, 225);
+		text("Worst", 75, 265);
+
+		fill(0);
+		line(150, 160, 150, ui_height);
+
+
+		fill(255);
+		String[] timeComplexity = sort.getTimeComplexity();
+		text(timeComplexity[0], 225, 185);
+		text(timeComplexity[1], 225, 225);
+		text(timeComplexity[2], 225, 265);
+
+		textAlign(LEFT);
+		String temp = "";
+		long mili = curTime%1000;
+		int s = (int)(curTime/1000);
+
+		int m = s/60;
+		s = s - m*60;
+
+		if (m < 10){
+			temp += "0";
+			
+		}
+		
+		temp += m;
+
+		temp += ":";
+		if (s < 10){
+			temp += "0";
+		}
+		temp += s;
+
+		temp += ".";
+		if (mili < 10){
+			temp += "00";
+		}
+		else if(mili <100){
+			temp += "0";
+		}
+
+		temp += mili;
+		
+
+		text("Visual Time: " + temp + " | compared: " + sort.getCompare() + " | swapped: " + sort.getSwap(), 5, ui_height + 25);
+
+	}
+
 	public void draw(){
 		background(51);
 
@@ -479,9 +519,10 @@ public class Project extends PApplet {
 			curTime = end_time - start_time;
 		}
 
-		panel.render();
-
+		DrawPanel();
 		SliderProcessing();
+		ButtonProcessing();
+
 
 		// Set time step every 20 frame
 		if (frameCount % 20 == 0){
@@ -511,10 +552,29 @@ public class Project extends PApplet {
 			} catch (ArrayIndexOutOfBoundsException e) {
 				fill(255);
 			}
-			rect(i*w, (float)height - arr[i].floatValue(), w, arr[i].floatValue());
+
+			if (draw_type == 0){
+				rect(i*w, (float)height - arr[i].floatValue(), w, arr[i].floatValue());
+			}
+			else{
+				circle(i*w, (float)height - arr[i].floatValue() + w/2, w);
+			}
 		}
 
-		ButtonProcessing();
+		if (keyPressed){
+
+			if (!pressed){
+				if (key == ' '){
+					draw_type = 1 - draw_type;
+				}
+				pressed = true;
+			}
+			
+		}
+		else{
+			pressed = false;
+		}
+
 	}
 
 	static public void main(String[] passedArgs) {
@@ -525,4 +585,5 @@ public class Project extends PApplet {
 			PApplet.main(appletArgs);
 		}
 	}
+
 }

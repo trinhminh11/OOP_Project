@@ -10,6 +10,8 @@ public class SortProcessing<T extends Comparable<T>>{
 	BubbleSort<T> bubble;
 	SelectionSort<T> selection;
 	InsertionSort<T>  insertion;
+	TimSort<T> tim;
+	IntroSort<T> intro;
 
 	Sort<T> sort;
 
@@ -20,6 +22,8 @@ public class SortProcessing<T extends Comparable<T>>{
 		bubble = new BubbleSort<T>(timeStep);
 		selection = new SelectionSort<>(timeStep);
 		insertion = new InsertionSort<>(timeStep);
+		tim = new TimSort<>(timeStep);
+		intro = new IntroSort<>(timeStep);
 
 		sort = new QuickSort<>(timeStep);
 
@@ -55,10 +59,22 @@ public class SortProcessing<T extends Comparable<T>>{
 	public int[] get_color(int i){
 		return sort.get_color(i);
 	}
+
+	public void set_color(int l, int r, int[] color){
+		sort.set_color(l, r, color);
+	}
 	
 	public void setMode(String m){
 		mode = m;
 		switch (mode) {
+			case "Tim":
+				sort = tim;
+				break;
+			
+			case "Intro":
+				sort = intro;
+				break;
+
 			case "Quick":
 				sort = quick;
 				break;

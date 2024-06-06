@@ -1,5 +1,10 @@
 package Sorting;
 
+import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Synthesizer;
+
 public abstract class Sort<T extends Comparable<T>> {
 	// Thread thread = Thread.currentThread();
 	// Thread thread = new Thread(Runnable, "test");
@@ -18,13 +23,51 @@ public abstract class Sort<T extends Comparable<T>> {
 
 	protected CONST constant = new CONST();
 
+
+	private static MidiChannel[] channels;
+	private static int INSTRUMENT = 6; // 0 is a piano, 9 is percussion, other channels are for other instruments
+	private static int VOLUME = 80;
+
 	public Sort(int timeStep){
 		this.timeStep = timeStep;
+		Synthesizer synth;
+		try {
+			synth = MidiSystem.getSynthesizer();
+			synth.open();
+			channels = synth.getChannels();
+
+
+		} catch (MidiUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	protected void await(){
+	protected void await(int i){
+		int note_min = 80;
+		int note_max = 100;
+
+		float note = (float)i / (float)colors.length;
+		note = note*(note_max-note_min) + note_min;
+
+
 		try {
-			Thread.sleep(timeStep);
+			play((int) note, timeStep);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void await(int i, int time){
+		int note_min = 80;
+		int note_max = 100;
+
+		float note = (float)i / (float)colors.length;
+		note = note*(note_max-note_min) + note_min;
+
+
+		try {
+			play((int) note, time);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -40,9 +83,13 @@ public abstract class Sort<T extends Comparable<T>> {
 	}
 
 	protected void set_color(int left, int right, int[] color){
-		for (int i = left; i <= right; i++){
-			colors[i] = color;
+		try {
+			for (int i = left; i <= right; i++){
+				colors[i] = color;
+			}
+		} catch (Exception e) {
 		}
+		
 	}
 
 	protected void reset_color(int left, int right){
@@ -101,5 +148,18 @@ public abstract class Sort<T extends Comparable<T>> {
 			}
 		});
 		main_Thread.start();
+	}
+	
+
+	private static void play(int i, int duration) throws InterruptedException{
+			// * start playing a note
+			// channels[INSTRUMENT].noteOn(id(note), VOLUME );
+			channels[INSTRUMENT].noteOn(i, VOLUME );
+
+			// * wait
+			Thread.sleep( duration );
+			// * stop playing a note
+			channels[INSTRUMENT].noteOff(i);
+			// channels[INSTRUMENT].noteOff(id(note));
 	}
 }

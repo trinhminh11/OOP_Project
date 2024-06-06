@@ -11,22 +11,30 @@ public class SelectionSort<T extends Comparable<T>> extends Sort<T>{
 	}
 	
 	protected void _sort(T[] arr){
-		set_color(0, arr.length-1, constant.WHITE);
-		for(int i = 1;i<arr.length;i++) {
-			set_color(0, i, constant.BLUE);
+		int n = arr.length;
 
-			T key = arr[i];
-			int j = i-1;
-			while (j>=0&& arr[j].compareTo(key) > 0) {
-				await();
-				colors[j+1] = constant.BLUE;
+        for (int i = 0; i < n-1; i++){
+            int min_idx = i;
+			colors[min_idx] = constant.YELLOW;
+            for (int j = i+1; j < n; j++){
 				colors[j] = constant.RED;
-				arr[j+1] = arr[j];
-				j--;
+				await(j);
+				compared++;
+				if (arr[j].compareTo(arr[min_idx]) < 0){
+					colors[min_idx] = constant.RED;
+					min_idx = j;
+					colors[min_idx] = constant.YELLOW;
+				}
 			}
 
-			arr[j+1]=key;
-		}
-		set_color(0, arr.length-1, constant.WHITE);
+			await(i);
+			swapped++;
+			swap(arr, i, min_idx);
+			colors[i] = constant.BLUE;
+
+			set_color(i+1, n-1, constant.WHITE);
+        }
+
+		set_color(0, n-1, constant.WHITE);
 	}
 }

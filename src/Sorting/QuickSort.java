@@ -54,43 +54,58 @@ public class QuickSort<T extends Comparable<T>> extends Sort<T>{
 
 	private int hoare_partition(T[] arr, int low, int high){
 		set_color(low, high-1, constant.BLUE);
+		int idx = low + (int)(Math.random() * ((high - low) + 1));
+
+		await(idx);
+		swapped++;
+		swap(arr, high, idx);
+		
 		T pivot = arr[high];
         int i = low, j = high-1;
 
         while (true) {
-			await();
+			await(i);
+			compared ++;
 			while (arr[i].compareTo(pivot) < 0) {
-				compared ++;
 				colors[i] = constant.WHITE;
-				await();
 				i++;
 				colors[i] = constant.YELLOW;
+				await(i);
+				compared ++;
 			}
             
+			await(j);
+			compared ++;
 			while (arr[j].compareTo(pivot) > 0 && j >= 1){
-				compared ++;
 				colors[j] = constant.WHITE;
-				await();
 				j--;
 				colors[j] = constant.YELLOW;
+				await(j);
+				compared ++;
 			}
 
             if (i >= j){
-				await();
-				swap(arr, i, high);
+				await(i);
 				swapped ++;
+				swap(arr, i, high);
 				colors[i] = constant.WHITE;
 				colors[j] = constant.WHITE;
                 return i;
 			}
-			await();
-			swap(arr, i, j);
+			await(j);
 			swapped ++;
+			swap(arr, i, j);
         }
 	}
 
 	private int lomuto_partition(T[] arr, int low, int high){
 		set_color(low, high, constant.WHITE);
+
+		int idx = low + (int)(Math.random() * ((high - low) + 1));
+
+		await(idx);
+		swapped++;
+		swap(arr, high, idx);
 		
 		T pivot = arr[high];
 		
@@ -99,19 +114,17 @@ public class QuickSort<T extends Comparable<T>> extends Sort<T>{
 		colors[i] = constant.WHITE;
 
 		for (int j = low; j <= high- 1; j++){
-			await();
 			if (j>low){
 				colors[j-1] = constant.BLUE;
 			}
 
 			colors[j] = constant.YELLOW;
-
+			await(j);
+			compared ++;
 			if (arr[j].compareTo(pivot) <= 0){
-				await();
-				compared ++;
-				await();
-				swap(arr, i, j);
+				await(j);
 				swapped++;
+				swap(arr, i, j);
 				colors[i] = constant.BLUE;
 				i++;
 				colors[i] = constant.YELLOW;
@@ -119,9 +132,9 @@ public class QuickSort<T extends Comparable<T>> extends Sort<T>{
 		}
 
 
-		await();
-		swap(arr, i, high);
+		await(i);
 		swapped ++;
+		swap(arr, i, high);
 
 		colors[low] = constant.WHITE;
 		set_color(i, high, constant.WHITE);

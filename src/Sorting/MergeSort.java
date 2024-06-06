@@ -16,18 +16,18 @@ public class MergeSort<T extends Comparable<T>> extends Sort<T>{
 	}
 
 	// Typical recursive merge sort
-	public void mergeSort(T[] array, int begin, int end){
-		if (begin<end){
-			int mid = (begin+end)/2;
+	public void mergeSort(T[] arr, int left, int right){
+		if (left<right){
+			int mid = (left+right)/2;
 			if (multiThread && count_thread < MAX_THREAD){
 				Thread t1 = new Thread(()->
 				{
-					mergeSort(array, begin, mid);
+					mergeSort(arr, left, mid);
 				});
 
 				Thread t2 = new Thread(()->
 				{
-					mergeSort(array, mid+1, end);
+					mergeSort(arr, mid+1, right);
 				});
 				count_thread += 2;
 
@@ -45,77 +45,73 @@ public class MergeSort<T extends Comparable<T>> extends Sort<T>{
 			}
 
 			else{
-				mergeSort(array, begin, mid);
-				mergeSort(array, mid+1, end);
+				mergeSort(arr, left, mid);
+				mergeSort(arr, mid+1, right);
 			}
 
-			merge(array, begin, mid, end);
+			merge(arr, left, mid, right);
 			
 		}
 	}
 	
-	//Typical 2-way merge
-	public void merge(T[] array, int begin, int mid, int end){
 
-		set_color(begin, end, constant.BLUE);
+	public void merge(T[] arr, int left, int mid, int right){
+
+		set_color(left, right, constant.BLUE);
 
 		@SuppressWarnings("unchecked")
-		T temp[] = (T[]) Array.newInstance(array[0].getClass(), (end-begin)+1);
+		T temp[] = (T[]) Array.newInstance(arr[0].getClass(), (right-left)+1);
 		
-		int i = begin, j = mid+1; 
+		int i = left, j = mid+1; 
 		int k = 0;
 
 		// Add elements from first half or second half based on whichever is lower, 
 		// do until one of the list is exhausted and no more direct one-to-one comparison could be made
-		while(i<=mid && j<=end){
-			await();
-			colors[begin+k] = constant.YELLOW;
+		while(i<=mid && j<=right){
+			colors[left+k] = constant.YELLOW;
 			
-			if (array[i].compareTo(array[j]) <= 0){
-				await();
-				compared++;
-				await();
-				temp[k] = array[i];
+			await(i);
+			compared++;
+			if (arr[i].compareTo(arr[j]) <= 0){
+				await(i);
 				swapped ++;
+				temp[k] = arr[i];
 				i+=1;
 			}else{
-				await();
-				temp[k] = array[j];
+				await(j);
 				swapped ++;
+				temp[k] = arr[j];
 				j+=1;
 			}
 			k+=1;
 		}
 
-		// Add remaining elements to temp array from first half that are left over
+		// Add remaining elements to temp arr from first half that are left over
 		while(i<=mid){
-			await();
-			colors[begin+k] = constant.YELLOW;
+			colors[left+k] = constant.YELLOW;
 			
-			await();
-			temp[k] = array[i];
+			await(i);
 			swapped ++;
+			temp[k] = arr[i];
 			i+=1; k+=1;
 		} 
 		
-		// Add remaining elements to temp array from second half that are left over
-		while(j<=end){
-			await();
-			colors[begin+k] = constant.YELLOW;
+		// Add remaining elements to temp arr from second half that are left over
+		while(j<=right){
+			colors[left+k] = constant.YELLOW;
 
-			await();
-			temp[k] = array[j];
+			await(j);
 			swapped ++;
+			temp[k] = arr[j];
 			j+=1; k+=1;
 		}
 
-		for(i=begin, k=0; i<=end; i++,k++){
-			await();
+		for(i=left, k=0; i<=right; i++,k++){
 			colors[i] = constant.BLUE;
 			
-			await();
-			array[i] = temp[k];
+			await(i);
 			swapped ++;
+			arr[i] = temp[k];
 		}
 
 	}

@@ -15,4 +15,24 @@ public class CONST {
 			GRAY[i] = new int[]{i, i, i};
 		}
 	}
+
+	private int _hueToRGB(int n, int H){
+		double k = (n + (double)H/60) % 6;
+
+		double fn = 1 - Math.max(0, Math.min(k, Math.min(4-k, 1)));
+
+		return (int) (fn*255);
+	}
+
+	int[] hueToRGB(int H){
+	
+		return new int[]{_hueToRGB(5, H), _hueToRGB(3, H), _hueToRGB(1, H)};
+	}
+
+	int[] huetoRGB(double H){
+		H *= 360;
+		int _H = (int)H;
+		return new int[]{_hueToRGB(5, _H), _hueToRGB(3, _H), _hueToRGB(1, _H)};
+	}
+	
 }

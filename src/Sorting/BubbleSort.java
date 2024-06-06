@@ -10,25 +10,30 @@ public class BubbleSort<T extends Comparable<T>> extends Sort<T>{
 	}
 
 	protected void _sort(T[] arr){
-		set_color(0, arr.length-1, constant.WHITE);
-		for(int i = 1;i<arr.length;i++) {
-			set_color(0, i, constant.BLUE);
-
-			T key = arr[i];
-			int j = i-1;
-			while (j>=0&& arr[j].compareTo(key) > 0) {
+		int i, j;
+        boolean is_swap;
+        for (i = 0; i < arr.length - 1; i++) {
+            is_swap = false;
+            for (j = 0; j < arr.length - i - 1; j++) {
+				await(j);
 				compared ++;
-				await();
-				colors[j+1] = constant.BLUE;
-				colors[j] = constant.RED;
-				arr[j+1] = arr[j];
-				swapped ++;
-				j--;
-			}
+				colors[j] = constant.WHITE;
+				if (arr[j].compareTo(arr[j+1])>0){
+					await(j);
+					swapped ++;
+					swap(arr, j, j+1);
+                    is_swap = true;
+                }
+				colors[j+1] = constant.RED;
+            }
 
-			arr[j+1]=key;
-			swapped ++;
-		}
+			colors[j] = constant.BLUE;
+
+            // If no two elements were
+            // swapped by inner loop, then break
+            if (is_swap == false)
+                break;
+        }
 
 		set_color(0, arr.length-1, constant.WHITE);
 	}
